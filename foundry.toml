@@ -1,0 +1,36 @@
+[profile.default]
+src = "contracts"
+out = "out"
+libs = ["lib"]
+test = "test"
+cache_path = "cache"
+remappings = [
+    "openzeppelin/=lib/openzeppelin-contracts/",
+    "chainlink/=lib/chainlink-brownie-contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+[profile.default.optimizer]
+enabled = true
+runs = 200
+
+[profile.default.model_checker]
+contracts = {
+    "contracts/staking/StakeLocker.sol" = ["contracts/staking/StakeLocker.sol:StakeLocker"],
+    "contracts/tokens/FTHGold.sol" = ["contracts/tokens/FTHGold.sol:FTHGold"],
+    "contracts/payout/RedemptionDesk.sol" = ["contracts/payout/RedemptionDesk.sol:RedemptionDesk"]
+}
+engine = "chc"
+timeout = 10000
+
+[rpc_endpoints]
+mainnet = "${MAINNET_RPC_URL}"
+polygon = "${POLYGON_RPC_URL}"
+mumbai = "${MUMBAI_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+polygon = { key = "${POLYGONSCAN_API_KEY}" }
+mumbai = { key = "${POLYGONSCAN_API_KEY}" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
