@@ -13,6 +13,7 @@ library Errors {
     error SanctionedAddress(address user);
     error JurisdictionNotAllowed(uint16 jurisdiction);
     error NotAccredited(address user);
+    error ComplianceViolation(address user, string reason);
     
     // Staking & Lock
     error InsufficientAmount(uint256 provided, uint256 required);
