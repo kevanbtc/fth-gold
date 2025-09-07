@@ -1,0 +1,45 @@
+# Echidna Configuration for FTH Gold System
+testMode: property
+
+# Contract settings
+contractAddr: "0x1234567890123456789012345678901234567890"
+deployer: "0x41414141414141414141414141414141414141"
+
+# Testing parameters  
+testLimit: 10000
+shrinkLimit: 5000
+seqLen: 100
+workers: 4
+
+# Coverage settings
+coverage: true
+corpusDir: "corpus"
+
+# Property testing
+checkAsserts: true
+multi-abi: false
+
+# Advanced options
+timeout: 600
+seed: 0
+
+# Format settings
+format: text
+
+# Filter functions to test
+filterBlacklist: true
+filterFunctions: ["echidna_", "crytic_"]
+
+# Solidity compiler
+solcArgs: "--optimize --optimize-runs 200"
+cryticArgs: ["--compile-force-framework", "foundry"]
+
+# Transaction settings
+balanceAddr: "0xffffffffffffffffffffffffffffffffffffffff"
+balanceContract: 1000000000000000000000000 # 1M ETH
+
+# Property examples (to be implemented in test contracts)
+# echidna_coverage_always_sufficient: coverage ratio >= threshold
+# echidna_no_mint_without_kyc: minting requires valid KYC
+# echidna_lock_period_enforced: conversion blocked before unlock
+# echidna_oracle_guards_work: operations halt on oracle failure
