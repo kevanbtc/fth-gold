@@ -4,7 +4,6 @@ pragma solidity ^0.8.24;
 import {ERC20} from "openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Permit} from "openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import {ERC20Pausable} from "openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
-import {ERC20Snapshot} from "openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
 import "../access/AccessRoles.sol";
 import "../libs/Errors.sol";
 import "../libs/Events.sol";
@@ -12,14 +11,11 @@ import "../libs/Events.sol";
 /**
  * @title FTHGold
  * @dev ERC20 token representing ownership of vaulted gold (1 token = 1 kg)
- * Features: Pausable, Permit (gasless approvals), Snapshots, Controlled supply
+ * Features: Pausable, Permit (gasless approvals), Controlled supply
  */
-contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRoles {
+contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, AccessRoles {
     /// @notice Maximum total supply (safety cap: 1M kg = $65B at $2000/oz)
     uint256 public constant MAX_SUPPLY = 1_000_000 * 1e18;
-    
-    /// @notice Tracks total supply for quick access
-    uint256 private _currentSupply;
     
     /// @notice Per-user mint limits (can be adjusted by admin)
     mapping(address => uint256) public mintLimits;
@@ -61,9 +57,11 @@ contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRole
 
     /**
      * @dev Create snapshot for dividends/governance
+     * Note: Temporarily disabled - can be re-enabled when OpenZeppelin updates include ERC20Snapshot
      */
     function snapshot() external onlyTreasurer returns (uint256) {
-        return _snapshot();
+        // return _snapshot();
+        revert("Snapshot functionality temporarily disabled");
     }
 
     /**
@@ -79,8 +77,8 @@ contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRole
         uint256 weiAmount = kgAmount * 1e18;
         
         // Check maximum supply
-        if (_currentSupply + weiAmount > MAX_SUPPLY) {
-            revert Errors.MintCapExceeded(weiAmount, MAX_SUPPLY - _currentSupply);
+        if (totalSupply() + weiAmount > MAX_SUPPLY) {
+            revert Errors.MintCapExceeded(weiAmount, MAX_SUPPLY - totalSupply());
         }
         
         // Check user mint limit
@@ -101,7 +99,6 @@ contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRole
         }
         
         // Update counters
-        _currentSupply += weiAmount;
         dailyMinted += weiAmount;
         
         // Mint tokens
@@ -126,7 +123,6 @@ contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRole
             revert Errors.InsufficientBalance(from, balanceOf(from), weiAmount);
         }
         
-        _currentSupply -= weiAmount;
         _burn(from, weiAmount);
         
         emit Events.FTHGBurned(from, kgAmount, reason);
@@ -190,11 +186,11 @@ contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRole
     }
 
     /**
-     * @dev Override _update to include pausable and snapshot functionality
+     * @dev Override _update to include pausable functionality
      */
     function _update(address from, address to, uint256 value) 
         internal 
-        override(ERC20, ERC20Pausable, ERC20Snapshot) 
+        override(ERC20, ERC20Pausable) 
     {
         super._update(from, to, value);
     }
@@ -219,7 +215,6 @@ contract FTHGold is ERC20, ERC20Permit, ERC20Pausable, ERC20Snapshot, AccessRole
             revert Errors.InsufficientBalance(from, balanceOf(from), weiAmount);
         }
         
-        _currentSupply -= weiAmount;
         _burn(from, weiAmount);
         
         emit Events.FTHGBurned(from, kgAmount, reason);
