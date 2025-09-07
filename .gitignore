@@ -28,6 +28,9 @@ yarn-error.log*
 out/
 cache/
 broadcast/
+.gas-snapshot
+lcov.info
+*.txt
 
 # IDE
 .vscode/

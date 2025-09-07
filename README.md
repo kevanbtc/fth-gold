@@ -1,3 +1,138 @@
+# FTH Gold - Tokenized Gold Smart Contract System
+
+> **Developer Note**: This document contains both technical development information and marketing materials. Scroll down for business overview or continue reading for technical setup.
+
+## 🔧 Local Development Setup
+
+### Prerequisites
+
+- [Foundry](https://getfoundry.sh/) - Ethereum development toolkit
+- [Git](https://git-scm.com/) with submodule support
+- [Node.js](https://nodejs.org/) v18+ (for frontend development)
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/kevanbtc/fth-gold.git
+cd fth-gold
+
+# Initialize git submodules (dependencies)
+git submodule update --init --recursive
+
+# Install Foundry if not already installed
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+
+# Build the smart contracts
+forge build
+
+# Run tests
+forge test
+
+# Run tests with detailed output
+forge test -vvv
+
+# Check gas usage
+forge snapshot
+
+# Format code
+forge fmt
+```
+
+### Project Structure
+
+```
+contracts/
+├── access/          # Access control and role management
+├── compliance/      # KYC and regulatory compliance
+├── libs/           # Shared libraries (Errors, Events)
+├── oracle/         # Price feeds and Proof of Reserve
+├── staking/        # USDT staking and lock mechanism
+└── tokens/         # FTH-G token and stake receipts
+
+script/             # Deployment scripts
+test/               # Test files
+lib/                # External dependencies (git submodules)
+```
+
+### Development Workflow
+
+1. **Make changes** to contracts in `contracts/`
+2. **Compile** with `forge build`
+3. **Test** with `forge test`
+4. **Deploy locally** with `anvil` (local testnet)
+5. **Deploy to testnet** using deployment scripts
+
+### Environment Setup
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+# RPC URLs
+MAINNET_RPC_URL=
+SEPOLIA_RPC_URL=
+POLYGON_RPC_URL=
+
+# Private keys (for deployment)
+DEPLOYER_PRIVATE_KEY=
+
+# API keys
+ETHERSCAN_API_KEY=
+POLYGONSCAN_API_KEY=
+
+# Contract addresses (after deployment)
+ADMIN_MULTISIG=
+TREASURY_ADDRESS=
+```
+
+### Testing
+
+```bash
+# Run all tests
+forge test
+
+# Run specific test file
+forge test --match-path test/FTHGold.t.sol
+
+# Run with gas report
+forge test --gas-report
+
+# Run with coverage
+forge coverage
+```
+
+### Deployment
+
+```bash
+# Deploy to local testnet (anvil)
+anvil  # In separate terminal
+forge script script/Deploy.s.sol --broadcast --rpc-url localhost
+
+# Deploy to Sepolia testnet
+forge script script/Deploy.s.sol --broadcast --rpc-url $SEPOLIA_RPC_URL --private-key $DEPLOYER_PRIVATE_KEY --verify
+```
+
+### Contract Architecture
+
+- **FTHGold**: ERC20 token representing gold ownership (1 token = 1 kg)
+- **StakeLocker**: Main contract for USDT staking → 5-month lock → FTH-G conversion
+- **KYCSoulbound**: Soulbound NFT for KYC compliance
+- **ComplianceRegistry**: Global compliance rules and jurisdiction management
+- **Oracle contracts**: Price feeds and Proof of Reserve verification
+
+### Security Features
+
+- ✅ Role-based access control
+- ✅ Reentrancy protection
+- ✅ Pausable functionality
+- ✅ Multi-signature requirements
+- ✅ Oracle staleness checks
+- ✅ Coverage ratio enforcement
+- ✅ Input validation and bounds checking
+
+---
+
 # 🦄 UnyKorn Master Stack - Future Tech Holdings Meeting
 
 **$425M-$685M Infrastructure + $245M+ Token Economy = $2B+ Total Ecosystem Value**
